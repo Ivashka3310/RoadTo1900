@@ -47,7 +47,7 @@ public:
 
 ///
 
-ll MinOstov(vector<pair<pll, pll>>& edges, ll n) {
+ll MinOstov(auto& edges, ll n) {
     ll w1, w2;
     
     stable_sort(edges.begin(), edges.end(), [](auto& a, auto& b) {return a.F.F < b.F.F;});
