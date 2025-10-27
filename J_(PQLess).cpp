@@ -54,7 +54,7 @@ class MinOstov {
     ll cnt_n;
 
 public:
-    MinOstov(const vector<vll>& list_edges, ll n, ll x) {
+    MinOstov(const auto& list_edges, ll n, ll x) {
         for (const auto& line : list_edges) {
             min_edges.push({line[2]+line[3]*x, {line[0], line[1]}});
         }
@@ -78,9 +78,10 @@ public:
 };
 
 void solve(ll n, ll m, ll l, ll r) {
-    vector<vll> edges(m, vll(4));
+    vector edges(m, vll(4));
     for (ll i=0; i<m; ++i) {
-        cin>>edges[i][0]>>edges[i][1]>>edges[i][2]>>edges[i][3];
+        for (auto& item : edges[i])
+            cin>>item;
     }
 
     MinOstov ostov1(edges, n, l), ostov2(edges, n, r);
@@ -130,3 +131,4 @@ int main() {
 1 2 1 0
 0 0 0 0
 */
+
