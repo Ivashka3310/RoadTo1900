@@ -1,4 +1,4 @@
-// ICPC 2025, квалификация, J (2 min ostov)
+// ICPC 2025, Москва, квалификация, J (2 min ostov)
 #include <bits/stdc++.h>
 
 using namespace std;
