@@ -76,6 +76,7 @@ void solve() {
     for (ll i=1; i<=k && dp[i-1][1]==false; ++i) {
         line2 = i;
         for (ll j=s.size(); j>0; --j) {
+            dp[i][j] = dp[i][j] || dp[i-1][j];
             if (j+i<=s.size()+1) {
                 dp[i][j] = dp[i-1][j+i] || (dp[i][j+i] 
                     && strCmpHigh(s.substr(j-1, i), s.substr(j+i-1, i)));
