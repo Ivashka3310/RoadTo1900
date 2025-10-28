@@ -41,7 +41,7 @@ bool strCmpHigh(const string& a, const string& b) {
 void solve() {
     string s;
     cin>>s;
-    ll k=2*sqrt(s.size());
+    ll k=2*sqrt(s.size())+1;
 
     vector dp(k+1, vb(s.size()+2, false));
 
@@ -53,6 +53,7 @@ void solve() {
     for (ll i=1; i<=k && dp[i-1][s.size()]==false; ++i) {
         line1 = i;
         for (ll j=1; j<=s.size(); ++j) {
+            dp[i][j] = dp[i][j] || dp[i-1][j];
             if (j>=i) {
                 dp[i][j] = dp[i-1][j-i] || (dp[i][j-i] 
                     && strCmpLow(s.substr(j-2*i, i), s.substr(j-i, i)));
@@ -65,6 +66,7 @@ void solve() {
     //         cout << it << " ";
     //     } cout << endl;
     // }
+
     for (auto& line : dp) {
         for (ll i=0; i<line.size()-1; ++i)
             line[i] = false;
