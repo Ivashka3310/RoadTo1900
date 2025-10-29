@@ -14,28 +14,12 @@ using PQLess= priority_queue<T, vector<T>, greater<T>>;
 #define F first
 #define S second
 
-bool strCmpLow(const char& a, const char& b) {
-    return a<b;
-}
-
-bool strCmpLow(const string& a, const string& b) {
-    for (size_t i=0; i<a.size(); ++i) {
-        if (a[i]>b[i]) 
-            return false;
-        else if (a[i]<b[i])
-            return true;
-    }
-    return false;
-}
-
-bool strCmpHigh(const string& a, const string& b) {
-    for (size_t i=0; i<a.size(); ++i) {
-        if (a[i]<b[i]) 
-            return false;
-        else if (a[i]>b[i])
-            return true;
-    }
-    return false;
+bool strCmp(string& s, ll ind1, ll ind2, ll len, char pred='<') {
+    int res = memcmp(s.c_str()+ind1, s.c_str()+ind2, len);
+    if (pred=='<')
+        return res<0;
+    else
+        return res>0;
 }
 
 void solve() {
@@ -55,8 +39,7 @@ void solve() {
         for (ll j=1; j<=s.size(); ++j) {
             dp[i][j] = dp[i][j] || dp[i-1][j];
             if (j>=i) {
-                dp[i][j] = dp[i-1][j-i] || (dp[i][j-i] 
-                    && strCmpLow(s.substr(j-2*i, i), s.substr(j-i, i)));
+                dp[i][j] = dp[i-1][j-i] || (dp[i][j-i] && strCmp(s, j-2*i, j-i, i, '<'));
             }
         }
     }
@@ -78,8 +61,7 @@ void solve() {
         for (ll j=s.size(); j>0; --j) {
             dp[i][j] = dp[i][j] || dp[i-1][j];
             if (j+i<=s.size()+1) {
-                dp[i][j] = dp[i-1][j+i] || (dp[i][j+i] 
-                    && strCmpHigh(s.substr(j-1, i), s.substr(j+i-1, i)));
+                dp[i][j] = dp[i-1][j+i] || (dp[i][j+i] && strCmp(s, j-1, j+i-1, i, '>'));
             }
         }
     }
@@ -90,11 +72,10 @@ void solve() {
     //     } cout << endl;
     // }
     
-    string ans1=s.substr(s.size()-line1, line1), ans2=s.substr(0, line2);
-    if (ans1.size()<ans2.size() || (ans1.size()==ans2.size() && strCmpLow(ans1, ans2))) {
-        cout << ans1 << endl;
+    if (line1<line2 || (line1==line2 && strCmp(s, s.size()-line1, 0, line1, '<'))) {
+        cout << s.substr(s.size()-line1, line1) << endl;
     } else {
-        cout << ans2 << endl;
+        cout << s.substr(0, line2) << endl;
     }
 }
 
