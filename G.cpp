@@ -35,10 +35,10 @@ string solve(string&s) {
     for (ll i=1; i<=k && dp[i-1][s.size()]==false; ++i) {
         line1 = i;
         for (ll j=1; j<=s.size(); ++j) {
-            dp[i][j] = dp[i][j] || dp[i-1][j];
             if (j>=i) {
                 dp[i][j] = dp[i-1][j-i] || (dp[i][j-i] && strCmp(s, j-2*i, j-i, i, '<'));
             }
+            dp[i][j] = dp[i][j] || dp[i-1][j];
         }
     }
 
@@ -57,10 +57,11 @@ string solve(string&s) {
     for (ll i=1; i<=k && dp[i-1][1]==false; ++i) {
         line2 = i;
         for (ll j=s.size(); j>0; --j) {
-            dp[i][j] = dp[i][j] || dp[i-1][j];
+            //dp[i][j] = dp[i][j] || dp[i-1][j];
             if (j+i<=s.size()+1) {
                 dp[i][j] = dp[i-1][j+i] || (dp[i][j+i] && strCmp(s, j-1, j+i-1, i, '>'));
             }
+            dp[i][j] = dp[i][j] || dp[i-1][j];
         }
     }
 
@@ -69,7 +70,8 @@ string solve(string&s) {
     //         cout << it << " ";
     //     } cout << endl;
     // }
-    cout << s.substr(s.size()-line1, line1) << " " << s.substr(0, line2) << endl;
+    
+    //cout << s.substr(s.size()-line1, line1) << " " << s.substr(0, line2) << endl;
     if (line1<line2 || (line1==line2 && strCmp(s, s.size()-line1, 0, line1, '<'))) {
         return s.substr(s.size()-line1, line1);
     } else {
