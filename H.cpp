@@ -1,4 +1,4 @@
-// ICPC 2025, квалификация, H (bfs, римские числа)
+// ICPC 2025, квалификация, H (Дейкстра, графы, римские числа)
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -37,10 +37,6 @@ public:
     }
 };
 
-void mins(ll& a, ll b) {
-    a = min(a,b);
-}
-
 void solve() {
     RomulNum rn;
     map<string, ll> nums;
@@ -52,34 +48,52 @@ void solve() {
         weight[i][0] = weight[i][1] = i;
     }
 
-    ll n, x, add, del; 
+    ll n, x; 
     cin>>n;
     for (ll i=0; i<n; ++i) {
-        cin>>x>>add>>del;
-
-        mins(weight[x][0], add);
-        mins(weight[x][1], del);
+        cin>>x>>weight[x][0]>>weight[x][1];
     }
 
     ll u, v;
     string currentRomulNum;
     for (ll i=1; i<4000; ++i) {
-        currentRomulNum = rn.translate(i);
-        x = nums[currentRomulNum];
-        u = nums[currentRomulNum.substr(1)];
-        v = nums[currentRomulNum.substr(0, currentRomulNum.size()-1)];
+        adj[0].push_back({i, weight[i][0]});
 
-        adj[u].push_back({x, weight[u][0]});
-        adj[x].push_back({u, weight[x][1]});
-        adj[v].push_back({x, weight[v][0]});
-        adj[x].push_back({v, weight[x][1]});
+        currentRomulNum = rn.translate(i);
+
+        for (ll j=1; j<currentRomulNum.size(); ++j) {
+            if (nums.count(currentRomulNum.substr(0, j))==1 && nums.count(currentRomulNum.substr(j))==1) {
+                x = nums[currentRomulNum];
+                u = nums[currentRomulNum.substr(0, j)];
+                v = nums[currentRomulNum.substr(j)];
+
+                adj[u].push_back({x, weight[v][0]});
+                adj[x].push_back({u, weight[v][1]});
+                adj[v].push_back({x, weight[u][0]});
+                adj[x].push_back({v, weight[u][1]});
+            }
+        }
+        
     }
 
-    // Граф adj не зависит от RomulNum => можно запустить bfs от каждой вершины (малоэффективно)
-    for (ll i=1; i<4000; ++i) {
-        for (ll j=1; j<4000; ++j) {
-            for (auto& u : adj[j]) {
-                weight[j][0] = min(weight[j][0], weight[u.F][0]+u.S);
+    // Граф adj не зависит от RomulNum => можно запустить Дейкстру от нуля
+    PQLess<pll> pq;
+    pq.push({0,0});
+    vll dist(4000, LONG_MAX);
+    vb used(4000, false);
+    used[0] = true;
+    dist[0] = 0;
+
+    while (!pq.empty()) {
+        auto t = pq.top();
+        pq.pop();
+        used[t.S] = true;
+
+        for (auto u : adj[t.S]) {
+            if (used[u.F]) continue;
+            if (dist[u.F] > dist[t.S]+u.S) {
+                dist[u.F] = dist[t.S]+u.S;
+                pq.push({dist[u.F], u.F});
             }
         }
     }
@@ -88,9 +102,18 @@ void solve() {
     cin>>tt;
     while (tt--) {
         cin>>y;
-        cout << weight[y][0] << "\n";
+        cout << dist[y] << "\n";
     }
 }
+
+/*
+2
+100 1 2
+1200 2 3
+2
+500
+3000
+*/
 
 int main() {
     ios::sync_with_stdio(0);
