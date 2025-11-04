@@ -57,7 +57,7 @@ void solve() {
         cin>>x>>weight[x][0]>>weight[x][1];
     }
 
-    ll u, v;
+    ll u, v, w;
     string currentRomulNum;
     for (ll i=1; i<4000; ++i) {
         adj[0].emplace_back(i, weight[i][0]);
@@ -85,19 +85,18 @@ void solve() {
     pq.push({0,0});
     vll dist(4000, LONG_MAX);
     vb used(4000, false);
-    used[0] = true;
     dist[0] = 0;
 
     while (!pq.empty()) {
-        auto t = pq.top();
+        auto [w, v] = pq.top();
         pq.pop();
-        used[t.S] = true;
+        if (used[v]) continue;
+        used[v] = true;
 
-        for (auto u : adj[t.S]) {
-            if (used[u.F]) continue;
-            if (dist[u.F] > dist[t.S]+u.S) {
-                dist[u.F] = dist[t.S]+u.S;
-                pq.push({dist[u.F], u.F});
+        for (auto [u, x] : adj[v]) {
+            if (dist[u] > w + x) {
+                dist[u] = w + x;
+                pq.push({dist[u], u});
             }
         }
     }
