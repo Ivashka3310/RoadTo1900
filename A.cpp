@@ -8,6 +8,7 @@ using vll = vector<ll>;
 using vb = vector<bool>;
 using pll = pair<ll, ll>;
 using vpll = vector<pll>;
+using vvll = vector<vll>;
 template<typename T>
 using PQLess= priority_queue<T, vector<T>, greater<T>>;
 
@@ -19,7 +20,6 @@ using PQLess= priority_queue<T, vector<T>, greater<T>>;
 
 #define F first
 #define S second
-#define pb(x) push_back(x)
 #define all(x) x.begin(), x.end()
 #define rall(x) (x).rbegin(), (x).rend()
 
@@ -77,18 +77,67 @@ ll inv(ll x, ll m) {
     return binpow(x, phi(m)-1, m);
 }
 
+/*
+I - 0
+V - 1
+X - 2
+L - 3
+C - 4
+D - 5
+M - 6
+*/
+
 void solve() {
     RomulNum rn;
-    vll cnt(16, 0);
-    rep(i, 4000) {
-        ++cnt[rn(i).size()];
+    vector next(4000, vll(7));
+    map<string, ll> exist;
+    rng(i, 1, 4000) {
+        exist[rn(i)] = i;
     }
 
-    ll n, p, inv_q, m=998'244'353;
-    cin>>n;
+    vector ssuff = {"I", "V", "X", "L", "C", "D", "M"};
+    rng(i, 1, 4000) {
+        rep(j, 7) {
+            if (exist.count(rn(i)+ssuff[j])==1) {
+                next[i][j] = exist[rn(i)+ssuff[j]];
+            } else {
+                string s = rn(i) + ssuff[j];
+                for (ll k=0; k<s.size(); ++k) {
+                    if (exist.count(s.substr(k))) {
+                        next[i][j] = exist[s.substr(k)];
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
-    p = cnt[min(16ll, n)]*(n - min(16ll, n) + 1);
-    inv_q = inv(binpow(7, n, m), m);
+    vector dp(1000, vector<vll>(16, vll(4000, 0)));
+
+    ll N, p, inv_q, m=998'244'353;
+    cin>>N;
+
+    for (ll n=2; n<=N; ++n) {
+        for (ll lastMax=1; lastMax<=15; ++lastMax) {
+            for (ll suff=1; suff<=3999; ++suff)
+            for (ll digit=0; digit<7; ++digit) {
+                ll currSuff = next[suff][digit];
+                ll currMax = max(lastMax, (ll)rn(currSuff).size());
+                //cout << currSuff << endl;
+                
+                dp[n][currMax][currSuff] += dp[n-1][lastMax][suff];
+            }
+        }
+    }
+
+    for (ll i=1; i<=15; ++i) {
+        ll si = 0;
+        for (ll j=1; j<=3999; ++j) {
+            si += dp[N][i][j];
+        }
+        p += i*si;
+    }
+    inv_q = inv(binpow(7, N, m), m);
 
     cout << (p*inv_q)%m << endl;
 }
